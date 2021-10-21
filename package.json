@@ -1,0 +1,36 @@
+{
+  "name": "virtual-ambulance-server",
+  "version": "1.0.0",
+  "description": "Virtual Ambulance Server",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KLIM-nk01/virtual-ambulance-server.git"
+  },
+  "keywords": [
+    "node.js",
+    "express",
+    "js"
+  ],
+  "author": "Nikita Klimovich <nikita.klimovich.20@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KLIM-nk01/virtual-ambulance-server/issues"
+  },
+  "homepage": "https://github.com/KLIM-nk01/virtual-ambulance-server#readme",
+  "dependencies": {
+    "config": "^3.3.6",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.11"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "nodemon": "^2.0.14"
+  }
+}
