@@ -2,9 +2,9 @@ const express = require("express")
 
 const router = express.Router();
 
-const medCentersController = require("../controllers/medCenters")
+const medCentersControllers = require("../controllers/medCenters")
 
-router.get("/", medCentersController.medCenters_get),
+router.get("/", medCentersControllers.medCenters_get),
 
 
 module.exports = router;

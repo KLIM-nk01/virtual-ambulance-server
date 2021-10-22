@@ -1,4 +1,4 @@
-const medCenterData = require("../DataBase/medCenterData");
+const medCenterData = require("../public/medCenterData");
 
 exports.medCenters_get = (req, res) => {
     try {

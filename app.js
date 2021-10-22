@@ -7,28 +7,29 @@ const PORT = config.get("port") || 3000;
 const app = express();
 const medCentersRoutes = require("./routes/medCenters.routes");
 const doctorsRoutes = require("./routes/doctors.routes");
-
+const registrationRoutes = require("./routes/registration.routes");
 app.use(
     cors({
         origin: "*",
     })
 );
 app.use(express.json());
-app.use(express.static("DataBase"));
+app.use(express.static("public"));
 
 app.use("/medCentersPage", medCentersRoutes);
 app.use("/doctorsPage", doctorsRoutes);
+app.use("/registration", registrationRoutes);
 
-async function startServer() {
+(async () => {
     try {
         await mongoose.connect("mongodb://localhost:27017/virtual-ambulance");
+
         app.listen(PORT, () => {
             console.log(`Server has been started on port: ${PORT}...`);
         });
+        
     } catch (e) {
         console.log("Server error, error message:", e.message);
         process.exit(1);
     }
-}
-
-startServer();
+})();
