@@ -8,6 +8,8 @@ const app = express();
 const medCentersRoutes = require("./routes/medCenters.routes");
 const doctorsRoutes = require("./routes/doctors.routes");
 const registrationRoutes = require("./routes/registration.routes");
+const authorizationRoutes = require('./routes/auth.routes')
+
 app.use(
     cors({
         origin: "*",
@@ -19,6 +21,7 @@ app.use(express.static("public"));
 app.use("/medCentersPage", medCentersRoutes);
 app.use("/doctorsPage", doctorsRoutes);
 app.use("/registration", registrationRoutes);
+app.use("/authorization", authorizationRoutes)
 
 (async () => {
     try {

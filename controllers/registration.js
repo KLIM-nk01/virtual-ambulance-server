@@ -1,12 +1,10 @@
 const bcrypt = require("bcryptjs");
-const { check, validateResult } = require("express-validator");
 const User = require("../models/User");
 const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 
 exports.registrationUser_post = async (req, res) => {
     try {
-        console.log(req.body);
         const {
             name,
             lastName,
@@ -18,33 +16,36 @@ exports.registrationUser_post = async (req, res) => {
             address,
             experience,
             direction,
+            workPlace,
         } = req.body;
 
-        const candidate = await User.findOne({ email });
+        const check_email = await User.findOne({ email });
+        const check_phone = await User.findOne({ phone });
 
-        if (candidate) {
-            return res
-                .status(400)
-                .json({ message: `User with email ${email} already exist` });
+        if (check_email) {
+            return res.status(400).json({
+                message: `User with email ${email} already exist`,
+            });
+        } else if (check_phone) {
+            return res.status(400).json({
+                message: `User with phone ${phone} already exist`,
+            });
         } else {
             const hashPassword = await bcrypt.hash(password, 8);
             const user = new User({
                 name,
                 lastName,
                 email,
+                phone,
                 // photo,
                 password: hashPassword,
                 userRole,
             });
             await user.save();
+
             if (userRole === "patient") {
                 const patient = new Patient({
                     id_user: user.id,
-                    name,
-                    lastName,
-                    // photo: { type: String },
-                    email,
-                    phone,
                     visit: [],
                     birthday,
                     address,
@@ -53,17 +54,13 @@ exports.registrationUser_post = async (req, res) => {
             } else if (userRole === "doctor") {
                 const doctor = new Doctor({
                     id_user: user.id,
-                    name,
-                    lastName,
-                    // photo: { type: String },
-                    email,
-                    phone,
                     experience,
-                    direction,
-                    workPlace,
+                    direction: direction.value,
+                    workPlace: workPlace.value,
                     workTime: [],
                     patients: [],
                 });
+                await doctor.save();
             }
         }
 
