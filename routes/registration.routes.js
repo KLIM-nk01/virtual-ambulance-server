@@ -16,7 +16,7 @@ const upload = multer({ storage: fileStorage });
 router.post(
     "/user",
     upload.single("photo"),
-    registrationControllers.registrationUser_post
+    registrationControllers.registrationUserPost
 );
 
 module.exports = router;

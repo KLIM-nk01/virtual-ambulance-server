@@ -1,6 +1,6 @@
 const medCenterData = require("../public/medCenterData");
 
-exports.medCenters_get = (req, res) => {
+exports.medCentersGet = (req, res) => {
     try {
         res.status(200).json(medCenterData);
     } catch (e) {
