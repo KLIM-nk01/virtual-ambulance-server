@@ -1,11 +1,23 @@
-const medCenterData = require("../public/medCenterData");
+const MedCenter = require("../models/MedCenter");
+const Doctor = require("../models/Doctor");
 
-exports.medCentersGet = (req, res) => {
+exports.medCentersGet = async (req, res) => {
     try {
-        res.status(200).json(medCenterData);
+        const medCenters = await MedCenter.find();
+            
+        res.status(200).json(medCenters);
     } catch (e) {
         console.log(e);
         res.send({ message: e });
     }
 };
 
+exports.medCentersGet = async (req, res) => {
+    try {
+        const medCenters = await MedCenter.find();
+        res.status(200).json(medCenters);
+    } catch (e) {
+        console.log(e);
+        res.send({ message: e });
+    }
+}

@@ -46,13 +46,12 @@ const medCenterData = [
             "Traumatology",
             "Andrology",
         ],
-        medStaff: ["id_doctor"],
+        medStaff: [],
         location: {
             lat: 53.900601,
             lon: 27.558972,
         },
 
-        // logo: photo.LODE_LOGO
     },
     {
         id_medcenter: new Date().getTime(),
