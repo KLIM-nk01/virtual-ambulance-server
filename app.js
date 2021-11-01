@@ -9,7 +9,7 @@ const medCentersRoutes = require("./routes/medCenters.routes");
 const doctorsRoutes = require("./routes/doctors.routes");
 const registrationRoutes = require("./routes/registration.routes");
 const authorizationRoutes = require("./routes/auth.routes");
-const userAuthRoutes = require("./routes/userAuth.routes")
+const userAuthRoutes = require("./routes/userAuth.routes");
 app.use(
     cors({
         origin: "*",
@@ -22,11 +22,11 @@ app.use("/medCenters", medCentersRoutes);
 app.use("/doctors", doctorsRoutes);
 app.use("/registration", registrationRoutes);
 app.use("/authorization", authorizationRoutes);
-app.use("/userAuth", userAuthRoutes)
+app.use("/userAuth", userAuthRoutes);
 
 start = async () => {
     try {
-        await mongoose.connect("mongodb://localhost:27017/virtual-ambulance");
+        await mongoose.connect(config.get("mongoToken"));
 
         app.listen(PORT, () => {
             console.log(`Server has been started on port: ${PORT}...`);
