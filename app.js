@@ -23,6 +23,7 @@ app.use("/doctors", doctorsRoutes);
 app.use("/registration", registrationRoutes);
 app.use("/authorization", authorizationRoutes);
 app.use("/userAuth", userAuthRoutes)
+
 start = async () => {
     try {
         await mongoose.connect("mongodb://localhost:27017/virtual-ambulance");

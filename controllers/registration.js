@@ -19,6 +19,7 @@ exports.registrationUserPost = async (req, res) => {
             experience,
             direction,
             workPlace,
+            photo
         } = req.body;
         console.log(req.body);
         const check_email = await User.findOne({ email });
@@ -40,7 +41,7 @@ exports.registrationUserPost = async (req, res) => {
             lastName,
             email,
             phone,
-            // photo,
+            photo,
             password: hashPassword,
             userRole,
         });
