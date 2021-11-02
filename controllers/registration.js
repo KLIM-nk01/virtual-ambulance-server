@@ -4,6 +4,7 @@ const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 const jwt = require("jsonwebtoken");
 const config = require("config");
+const MedCenter = require("../models/MedCenter");
 
 exports.registrationUserPost = async (req, res) => {
     try {
@@ -19,9 +20,9 @@ exports.registrationUserPost = async (req, res) => {
             experience,
             direction,
             workPlace,
-            photo
+            photo,
         } = req.body;
-        console.log(req.body);
+
         const check_email = await User.findOne({ email });
         const check_phone = await User.findOne({ phone });
 
@@ -36,12 +37,13 @@ exports.registrationUserPost = async (req, res) => {
             });
         }
         const hashPassword = await bcrypt.hash(password, 8);
+
         const user = new User({
             name,
             lastName,
             email,
             phone,
-            photo,
+            photo: photo === 'undefined' ? "http://localhost:3000/Assets/userPhoto/NoAvatar.png" : photo,
             password: hashPassword,
             userRole,
         });
@@ -49,7 +51,7 @@ exports.registrationUserPost = async (req, res) => {
 
         if (userRole === "patient") {
             const patient = new Patient({
-                id_user: user.id,
+                userData: user.id,
                 visit: [],
                 birthday,
                 address,
@@ -57,7 +59,7 @@ exports.registrationUserPost = async (req, res) => {
             await patient.save();
         } else if (userRole === "doctor") {
             const doctor = new Doctor({
-                id_user: user.id,
+                userData: user.id,
                 experience,
                 direction: direction.value,
                 workPlace: workPlace.value,
@@ -65,6 +67,14 @@ exports.registrationUserPost = async (req, res) => {
                 patients: [],
             });
             await doctor.save();
+            await MedCenter.findOneAndUpdate(
+                { _id: workPlace.value },
+                {
+                    $push: {
+                        medStaff: doctor.id,
+                    },
+                }
+            );
         }
         const token = jwt.sign({ id: user.id }, config.get("secretKey"), {
             expiresIn: "1h",
@@ -77,7 +87,6 @@ exports.registrationUserPost = async (req, res) => {
                 userRole: user.userRole,
             },
         });
-        
     } catch (e) {
         console.log(e);
         res.send({ message: "Server error" });

@@ -1,16 +1,23 @@
 const multer = require("multer");
 const moment = require("moment");
+const uniqid = require("uniqid");
+const config = require("config");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cd(null, "../public/userPhoto");
+        cb(null, "./public/Assets/userPhoto");
     },
-    filename: (req, file, cb) => {
-        const date = moment().format("DDMMYYYY");
-        cb(null, `${date}-${file.originalname}`);
+    filename: (req, file, cb, next) => {
+               
+    
+            const uniqFileName = `${uniqid()}-${file.originalname}`;
+            const filePath = `http://localhost:3000/Assets/userPhoto/${uniqFileName}`;
+            cb(null, uniqFileName);
+            req.body.photo = filePath;
+        
     },
 });
 
-module.export = multer({
+module.exports = multer({
     storage: storage,
 });

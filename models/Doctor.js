@@ -1,7 +1,7 @@
 const { Schema, model, ObjectId } = require("mongoose");
 
 const Doctor = new Schema({
-    id_user: { type: ObjectId, ref: "User" },
+    userData: { type: ObjectId, ref: "User" },
     name: { type: String, require: true, unique: false },
     lastName: { type: String, require: true, unique: false },
     // photo: { type: String },

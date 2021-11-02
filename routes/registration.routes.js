@@ -1,17 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const registrationControllers = require("../controllers/registration");
-const multer = require("multer");
 
-const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "./public/userPhoto");
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname);
-    },
-});
-const upload = multer({ storage: fileStorage });
+const upload = require("../middleware/multer");
 
 router.post(
     "/user",
