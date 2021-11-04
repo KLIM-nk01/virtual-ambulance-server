@@ -10,6 +10,8 @@ const doctorsRoutes = require("./routes/doctors.routes");
 const registrationRoutes = require("./routes/registration.routes");
 const authorizationRoutes = require("./routes/auth.routes");
 const userAuthRoutes = require("./routes/userAuth.routes");
+const profileRoutes = require("./routes/profile.routes");
+
 app.use(
     cors({
         origin: "*",
@@ -23,6 +25,7 @@ app.use("/doctors", doctorsRoutes);
 app.use("/registration", registrationRoutes);
 app.use("/authorization", authorizationRoutes);
 app.use("/userAuth", userAuthRoutes);
+app.use("/profile", profileRoutes);
 
 start = async () => {
     try {
