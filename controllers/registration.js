@@ -5,7 +5,7 @@ const Doctor = require("../models/Doctor");
 const jwt = require("jsonwebtoken");
 const config = require("config");
 const MedCenter = require("../models/MedCenter");
-
+const { ObjectId } = require("mongoose");
 exports.registrationUserPost = async (req, res) => {
     try {
         const {
@@ -43,7 +43,10 @@ exports.registrationUserPost = async (req, res) => {
             lastName,
             email,
             phone,
-            photo: photo === 'undefined' ? "http://localhost:3000/Assets/userPhoto/NoAvatar.png" : photo,
+            photo:
+                photo === "undefined"
+                    ? "http://localhost:3000/Assets/userPhoto/NoAvatar.png"
+                    : photo,
             password: hashPassword,
             userRole,
         });
@@ -58,17 +61,17 @@ exports.registrationUserPost = async (req, res) => {
             });
             await patient.save();
         } else if (userRole === "doctor") {
-            const doctor = new Doctor({
+            const doctor = await new Doctor({
                 userData: user.id,
                 experience,
-                direction: direction.value,
-                workPlace: workPlace.value,
+                direction: direction,
+                workPlace: workPlace,
                 workTime: [],
                 patients: [],
             });
             await doctor.save();
             await MedCenter.findOneAndUpdate(
-                { _id: workPlace.value },
+                { _id: workPlace },
                 {
                     $push: {
                         medStaff: doctor.id,
@@ -85,6 +88,7 @@ exports.registrationUserPost = async (req, res) => {
                 id: user.id,
                 name: user.name,
                 userRole: user.userRole,
+                photo: user.photo,
             },
         });
     } catch (e) {

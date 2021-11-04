@@ -8,7 +8,7 @@ exports.authPost = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
-       
+
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -16,6 +16,7 @@ exports.authPost = async (req, res) => {
         if (!isPassValid) {
             return res.status(400).json({ message: "Invalid password" });
         }
+        console.log(user.id)
         const token = jwt.sign({ id: user.id }, config.get("secretKey"), {
             expiresIn: "1h",
         });
@@ -25,6 +26,7 @@ exports.authPost = async (req, res) => {
                 id_user: user.id,
                 name: user.name,
                 userRole: user.userRole,
+                photo: user.photo,
             },
         });
     } catch (e) {
