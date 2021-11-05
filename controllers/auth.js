@@ -16,7 +16,6 @@ exports.authPost = async (req, res) => {
         if (!isPassValid) {
             return res.status(400).json({ message: "Invalid password" });
         }
-        console.log(user.id)
         const token = jwt.sign({ id: user.id }, config.get("secretKey"), {
             expiresIn: "1h",
         });

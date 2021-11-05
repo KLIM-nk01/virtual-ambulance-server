@@ -6,7 +6,6 @@ exports.allDoctorsDataGet = async (req, res) => {
         const doctors = await Doctor.find().populate({
             path: "userData",
         });
-        console.log(doctors);
         res.status(200).json(doctors);
     } catch (e) {
         console.log(e);
