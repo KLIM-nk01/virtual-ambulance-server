@@ -7,6 +7,7 @@ const Doctor = new Schema({
     phone: { type: String },
     experience: { type: String, require: true },
     direction: { type: String, ref: "Direction" },
+    description: {type: String},
     workPlace: { type: Schema.Types.ObjectId, ref: "MedCenter" },
     workTime: [{ date: String, time: String }],
     patients: [{ type: ObjectId, ref: "Patient" }],
