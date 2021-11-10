@@ -1,10 +1,11 @@
-const doctorsData = require("../public/doctorsData");
 const Doctor = require("../models/Doctor");
 
 exports.allDoctorsDataGet = async (req, res) => {
     try {
         const doctors = await Doctor.find().populate({
             path: "userData",
+        }).populate({
+            path: "workTime"
         });
         res.status(200).json(doctors);
     } catch (e) {
@@ -12,3 +13,4 @@ exports.allDoctorsDataGet = async (req, res) => {
         res.send({ message: e });
     }
 };
+

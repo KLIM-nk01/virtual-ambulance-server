@@ -29,9 +29,7 @@ app.use("/profile", profileRoutes);
 
 start = async () => {
     try {
-     
         await mongoose.connect(config.get("mongoToken"));
-
         app.listen(PORT, () => {
             console.log(`Server has been started on port: ${PORT}...`);
         });

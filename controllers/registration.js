@@ -71,7 +71,7 @@ exports.registrationUserPost = async (req, res) => {
                 { _id: workPlace },
                 {
                     $push: {
-                        medStaff: doctor.id,
+                        medStaff: doctor._id,
                     },
                 }
             );
