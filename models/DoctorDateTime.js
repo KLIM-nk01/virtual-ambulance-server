@@ -1,8 +1,8 @@
 const { Schema, model, ObjectId } = require("mongoose");
 
 const DateTime = new Schema({
-    idDoctor: { type: ObjectId, ref: "Doctor" },
-    idPatient: {type: ObjectId, ref: "Patient"},
+    doctorData: { type: ObjectId, ref: "Doctor" },
+    patientData: { type: ObjectId, ref: "Patient" },
     date: { type: String },
     time: { type: String },
 });

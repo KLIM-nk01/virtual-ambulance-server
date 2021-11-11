@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const MedCenter = require("../models/MedCenter");
 const constants = require("../constants/constants");
+
 exports.registrationUserPost = async (req, res) => {
     try {
         const {

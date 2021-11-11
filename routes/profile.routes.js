@@ -20,5 +20,16 @@ router.delete(
     userAuthMiddleware,
     profileControllers.profileDoctorDeleteDataDelete
 );
+router.put(
+    "/addAppointment",
+    userAuthMiddleware,
+    profileControllers.profilePatientAddAppointmentPut
+);
+
+router.delete(
+    "/deleteAppointment/:idDate",
+    userAuthMiddleware,
+    profileControllers.profilePatientDeleteAppointmentDelete
+);
 
 module.exports = router;
