@@ -1,22 +1,9 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const { secretKey } = require("config").get("jwt");
-const authHelper = require("../helpers/authHelper");
 const Token = require("../models/Token");
 const config = require("config");
-
-const updateToken = (userId) => {
-    const accessToken = authHelper.generateAccessToken(userId);
-    const refreshToken = authHelper.generateRefreshToken();
-
-    return authHelper
-        .replaceDbRefreshToken(refreshToken.id, userId)
-        .then(() => ({
-            accessToken,
-            refreshToken: refreshToken.token,
-        }));
-};
+const { updateTokens } = require("../helpers/updateTokens");
 
 exports.authPost = async (req, res) => {
     try {
@@ -31,7 +18,7 @@ exports.authPost = async (req, res) => {
             return res.status(400).json({ message: "Invalid password" });
         }
 
-        updateToken(user.id).then((tokens) =>
+        updateTokens(user.id).then((tokens) =>
             res.status(200).send({
                 tokens,
                 user: {
@@ -48,10 +35,9 @@ exports.authPost = async (req, res) => {
     }
 };
 
-exports.refreshTokens = (req, res) => {
-    const { refreshToken } = req.body;
-    console.log(refreshToken);
+exports.refreshTokens = (refreshToken) => {
     let payload = jwt.verify(refreshToken, config.get("secretKey"));
+
     try {
         if (payload.type !== "refresh") {
             res.status(400).json({ message: "Invalid Token!" });
@@ -66,16 +52,15 @@ exports.refreshTokens = (req, res) => {
             return;
         }
     }
-    console.log(payload);
-    Token.findOne({ tokenId: payload.id })
+    const tok = Token.findOne({ tokenId: payload.id })
         .exec()
         .then((token) => {
             if (token === null) {
                 throw new Error("Invalid token");
             }
 
-            return updateToken(token.userId);
+            return updateTokens(token.userId);
         })
-        .then((tokens) => res.json(tokens))
+        .then((tokens) => console.log(tokens))
         .catch((err) => res.status(400).json({ message: err.message }));
 };

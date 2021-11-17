@@ -10,7 +10,8 @@ const registrationRoutes = require("./routes/registration.routes");
 const authorizationRoutes = require("./routes/auth.routes");
 const userAuthRoutes = require("./routes/userAuth.routes");
 const profileRoutes = require("./routes/profile.routes");
-const refreshRoutes = require("./routes/refreshToken.routes");
+const cookieParser = require("cookie-parser");
+const refreshTokenRoutes = require("./routes/refreshToken.routes");
 
 app.use(
     cors({
@@ -19,14 +20,14 @@ app.use(
 );
 app.use(express.json());
 app.use(express.static("public"));
-
 app.use("/medCenters", medCentersRoutes);
 app.use("/doctors", doctorsRoutes);
 app.use("/registration", registrationRoutes);
 app.use("/authorization", authorizationRoutes);
 app.use("/userAuth", userAuthRoutes);
 app.use("/profile", profileRoutes);
-app.use("/refreshToken", refreshRoutes);
+app.use("/refreshToken", refreshTokenRoutes);
+app.use(cookieParser());
 
 start = async () => {
     try {

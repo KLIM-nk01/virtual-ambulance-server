@@ -2,6 +2,7 @@ const config = require("config");
 const uniqid = require("uniqid");
 const jwt = require("jsonwebtoken");
 const Token = require("../models/Token");
+
 const generateAccessToken = (userId) => {
     const { tokens } = config.get("jwt");
     const payload = {

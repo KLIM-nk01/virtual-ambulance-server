@@ -2,10 +2,9 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
-const jwt = require("jsonwebtoken");
-const config = require("config");
 const MedCenter = require("../models/MedCenter");
 const constants = require("../constants/constants");
+const { updateTokens } = require("../helpers/updateTokens");
 
 exports.registrationUserPost = async (req, res) => {
     try {
@@ -77,18 +76,17 @@ exports.registrationUserPost = async (req, res) => {
                 }
             );
         }
-        const token = jwt.sign({ id: user.id }, config.get("secretKey"), {
-            expiresIn: "1h",
-        });
-        return res.status(201).send({
-            token,
-            user: {
-                id: user.id,
-                name: user.name,
-                userRole: user.userRole,
-                photo: user.photo,
-            },
-        });
+        updateTokens(user.id).then((tokens) =>
+            res.status(200).send({
+                tokens,
+                user: {
+                    id_user: user.id,
+                    name: user.name,
+                    userRole: user.userRole,
+                    photo: user.photo,
+                },
+            })
+        );
     } catch (e) {
         console.log(e);
         res.send({ message: "Server error" });
