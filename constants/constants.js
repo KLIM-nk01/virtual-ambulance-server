@@ -5,4 +5,7 @@ module.exports = Object.freeze({
         DOCTOR: "doctor",
         ADMIN: "admin",
     },
+    ERRORS_MESSAGE: {
+        SERVER_ERROR: "Server error."
+    }
 });

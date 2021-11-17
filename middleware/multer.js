@@ -8,8 +8,6 @@ const storage = multer.diskStorage({
         cb(null, "./public/Assets/userPhoto");
     },
     filename: (req, file, cb, next) => {
-               
-    
             const uniqFileName = `${uniqid()}-${file.originalname}`;
             const filePath = `http://localhost:3000/Assets/userPhoto/${uniqFileName}`;
             cb(null, uniqFileName);

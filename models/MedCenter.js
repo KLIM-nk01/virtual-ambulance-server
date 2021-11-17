@@ -1,7 +1,6 @@
 const { Schema, model, ObjectId } = require("mongoose");
 
 const MedCenter = new Schema({
-    // id_medcenter: { type: ObjectId, ref: "User" },
     name: { type: String, require: true },
     address: { type: String, require: true },
     photo: { type: String },

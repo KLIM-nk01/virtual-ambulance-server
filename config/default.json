@@ -3,5 +3,18 @@
     "mongoUrl": "mongodb+srv://Nikita:Nikita525@cluster0.c1o5z.mongodb.net/VirtualAmbulance",
     "secretKey": "mern-secret-key",
     "mongoToken": "mongodb://localhost:27017/virtual-ambulance",
-    "localhost": "http://localhost:"
+    "localhost": "http://localhost:",
+    "jwt": {
+        "secretKey": "mern-secret-key",
+        "tokens" : {
+            "access" : {
+                "type": "access",
+                "expiresIn": "1m"
+            },
+            "refresh": {
+                "type": "refresh",
+                "expiresIn": "10d"
+            }
+        }
+    }
 }

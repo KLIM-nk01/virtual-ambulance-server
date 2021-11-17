@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const config = require("config");
-
 const PORT = config.get("port") || 3000;
 const app = express();
 const medCentersRoutes = require("./routes/medCenters.routes");
@@ -11,6 +10,7 @@ const registrationRoutes = require("./routes/registration.routes");
 const authorizationRoutes = require("./routes/auth.routes");
 const userAuthRoutes = require("./routes/userAuth.routes");
 const profileRoutes = require("./routes/profile.routes");
+const refreshRoutes = require("./routes/refreshToken.routes");
 
 app.use(
     cors({
@@ -26,6 +26,7 @@ app.use("/registration", registrationRoutes);
 app.use("/authorization", authorizationRoutes);
 app.use("/userAuth", userAuthRoutes);
 app.use("/profile", profileRoutes);
+app.use("/refreshToken", refreshRoutes);
 
 start = async () => {
     try {

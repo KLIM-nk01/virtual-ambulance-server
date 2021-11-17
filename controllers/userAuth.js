@@ -4,9 +4,9 @@ const config = require("config");
 
 exports.userAuthGet = async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.user.id });
-        const token = jwt.sign({ id: user.id }, config.get("secretKey"), {
-            expiresIn: "1h",
+        const user = await User.findOne({ _id: req.user.userId });
+        const token = jwt.sign({ id: user.userId }, config.get("secretKey"), {
+            expiresIn: "1m",
         });
         return res.status(200).send({
             token,

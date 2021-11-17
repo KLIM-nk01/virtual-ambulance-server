@@ -1,11 +1,12 @@
 const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 const DateTime = require("../models/DoctorDateTime");
+const constants = require("../constants/constants");
 
 exports.profilePatientGet = async (req, res) => {
     try {
         const patient = await Patient.findOne({
-            userData: req.user.id,
+            userData: req.user.userId,
         })
             .populate({
                 path: "userData",
@@ -40,22 +41,24 @@ exports.profilePatientGet = async (req, res) => {
                 photo: patient.userData.photo,
                 phone: patient.userData.phone,
                 email: patient.userData.email,
+                // ...patient.userData,
                 visit: visits,
                 birthday: patient.birthday,
                 address: patient.address,
             };
-            res.status(200).json(userData);
+            const test = userData;
+            res.status(200).json(test);
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: "Server error" });
+        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
     }
 };
 
 exports.profileDoctorGet = async (req, res) => {
     try {
         const doctor = await Doctor.findOne({
-            userData: req.user.id,
+            userData: req.user.userId,
         })
             .populate({
                 path: "userData",
@@ -99,14 +102,14 @@ exports.profileDoctorGet = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: "Server error" });
+        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
     }
 };
 
 exports.profileDoctorAddDatePut = async (req, res) => {
     try {
         const doctor = await Doctor.findOne({
-            userData: req.user.id,
+            userData: req.user.userId,
         });
         if (doctor) {
             const newDateTime = await new DateTime({
@@ -116,7 +119,7 @@ exports.profileDoctorAddDatePut = async (req, res) => {
             });
             await Doctor.findOneAndUpdate(
                 {
-                    userData: req.user.id,
+                    userData: req.user.userId,
                 },
                 {
                     $push: { workTime: newDateTime.id },
@@ -127,7 +130,7 @@ exports.profileDoctorAddDatePut = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: "Server error" });
+        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
     }
 };
 
@@ -135,13 +138,13 @@ exports.profileDoctorDeleteDataDelete = async (req, res) => {
     try {
         const { idDate } = req.params;
         const user = await Doctor.findOne({
-            userData: req.user.id,
+            userData: req.user.userId,
             workTime: idDate,
         });
         if (user) {
             await Doctor.findOneAndUpdate(
                 {
-                    userData: req.user.id,
+                    userData: req.user.userId,
                 },
                 {
                     $pullAll: { workTime: [idDate] },
@@ -154,14 +157,14 @@ exports.profileDoctorDeleteDataDelete = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: "Server error" });
+        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
     }
 };
 
 exports.profilePatientAddAppointmentPut = async (req, res) => {
     try {
         const user = await Patient.findOne({
-            userData: req.user.id,
+            userData: req.user.userId,
         });
         const dateTime = await DateTime.findOne({
             _id: req.body.data,
@@ -175,7 +178,7 @@ exports.profilePatientAddAppointmentPut = async (req, res) => {
         if (user && dateTime) {
             await Patient.findOneAndUpdate(
                 {
-                    userData: req.user.id,
+                    userData: req.user.userId,
                 },
                 {
                     $push: { visit: dateTime.id },
@@ -219,39 +222,30 @@ exports.profilePatientAddAppointmentPut = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: "Server error" });
+        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
     }
 };
 exports.profilePatientDeleteAppointmentDelete = async (req, res) => {
     try {
         const { idDate } = req.params;
         const user = await Patient.findOne({
-            userData: req.user.id,
+            userData: req.user.userId,
             visit: idDate,
         });
         if (user) {
             await Patient.findOneAndUpdate(
                 {
-                    userData: req.user.id,
+                    userData: req.user.userId,
                 },
                 {
                     $pullAll: { visit: [idDate] },
                 }
             );
 
-            const a = await DateTime.findOneAndUpdate(
-                {
-                    _id: idDate,
-                },
-                {
-                    $unset: { patientData: req.user.id },
-                }
-            );
-            console.log(a);
             res.status(200).json(idDate);
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: "Server error" });
+        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
     }
 };
