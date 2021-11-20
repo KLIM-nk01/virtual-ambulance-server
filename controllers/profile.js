@@ -41,13 +41,12 @@ exports.profilePatientGet = async (req, res) => {
                 photo: patient.userData.photo,
                 phone: patient.userData.phone,
                 email: patient.userData.email,
-                // ...patient.userData,
                 visit: visits,
                 birthday: patient.birthday,
                 address: patient.address,
             };
-            const test = userData;
-            res.status(200).json(test);
+
+            res.status(200).json(userData);
         }
     } catch (e) {
         console.log(e);
@@ -73,8 +72,10 @@ exports.profileDoctorGet = async (req, res) => {
                     populate: "userData",
                 },
             });
+
         if (doctor) {
             const workTime = doctor.workTime.map((time) => ({
+                _id: time._id,
                 doctorData: time.doctorData,
                 date: time.date,
                 time: time.time,
@@ -83,6 +84,7 @@ exports.profileDoctorGet = async (req, res) => {
                 patientPhoto: time.patientData?.userData.photo,
                 idWorkTime: time._id,
             }));
+
             const doctorData = {
                 name: doctor.userData.name,
                 lastName: doctor.userData.lastName,
@@ -111,12 +113,14 @@ exports.profileDoctorAddDatePut = async (req, res) => {
         const doctor = await Doctor.findOne({
             userData: req.user.userId,
         });
+
         if (doctor) {
             const newDateTime = await new DateTime({
                 doctorData: doctor.id,
                 date: req.body.date.split(" ")[0],
                 time: req.body.date.split(" ")[1],
             });
+
             await Doctor.findOneAndUpdate(
                 {
                     userData: req.user.userId,
@@ -125,7 +129,9 @@ exports.profileDoctorAddDatePut = async (req, res) => {
                     $push: { workTime: newDateTime.id },
                 }
             );
+
             await newDateTime.save();
+
             res.json(newDateTime);
         }
     } catch (e) {
@@ -141,6 +147,7 @@ exports.profileDoctorDeleteDataDelete = async (req, res) => {
             userData: req.user.userId,
             workTime: idDate,
         });
+
         if (user) {
             await Doctor.findOneAndUpdate(
                 {
@@ -150,6 +157,7 @@ exports.profileDoctorDeleteDataDelete = async (req, res) => {
                     $pullAll: { workTime: [idDate] },
                 }
             );
+
             await DateTime.deleteOne({
                 _id: idDate,
             });
@@ -175,6 +183,7 @@ exports.profilePatientAddAppointmentPut = async (req, res) => {
                 message: `You already have an appointment at this time.`,
             });
         }
+
         if (user && dateTime) {
             await Patient.findOneAndUpdate(
                 {
@@ -185,7 +194,7 @@ exports.profilePatientAddAppointmentPut = async (req, res) => {
                 }
             );
 
-            const date = await DateTime.findOne({
+            const doctorWorkTime = await DateTime.findOne({
                 _id: req.body.data,
             }).populate({
                 path: "doctorData",
@@ -196,7 +205,8 @@ exports.profilePatientAddAppointmentPut = async (req, res) => {
                     { path: "userData", select: ["name", "lastName"] },
                 ],
             });
-            if (date) {
+
+            if (doctorWorkTime) {
                 await DateTime.findOneAndUpdate(
                     {
                         _id: req.body.data,
@@ -208,13 +218,14 @@ exports.profilePatientAddAppointmentPut = async (req, res) => {
                     }
                 );
                 const response = {
-                    doctorName: date.doctorData.userData.name,
-                    doctorLastName: date.doctorData.userData.lastName,
-                    doctorDirection: date.doctorData.direction,
-                    medCenterName: date.doctorData.workPlace.name,
-                    medCenterAddress: date.doctorData.workPlace.address,
-                    time: date.time,
-                    date: date.date,
+                    doctorName: doctorWorkTime.doctorData.userData.name,
+                    doctorLastName: doctorWorkTime.doctorData.userData.lastName,
+                    doctorDirection: doctorWorkTime.doctorData.direction,
+                    medCenterName: doctorWorkTime.doctorData.workPlace.name,
+                    medCenterAddress:
+                        doctorWorkTime.doctorData.workPlace.address,
+                    time: doctorWorkTime.time,
+                    date: doctorWorkTime.date,
                 };
 
                 res.json(response);
@@ -225,6 +236,7 @@ exports.profilePatientAddAppointmentPut = async (req, res) => {
         res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
     }
 };
+
 exports.profilePatientDeleteAppointmentDelete = async (req, res) => {
     try {
         const { idDate } = req.params;
@@ -232,6 +244,7 @@ exports.profilePatientDeleteAppointmentDelete = async (req, res) => {
             userData: req.user.userId,
             visit: idDate,
         });
+
         if (user) {
             await Patient.findOneAndUpdate(
                 {
@@ -239,6 +252,17 @@ exports.profilePatientDeleteAppointmentDelete = async (req, res) => {
                 },
                 {
                     $pullAll: { visit: [idDate] },
+                }
+            );
+
+            await DateTime.findOneAndUpdate(
+                {
+                    _id: idDate,
+                },
+                {
+                    $unset: {
+                        patientData: user.id,
+                    },
                 }
             );
 

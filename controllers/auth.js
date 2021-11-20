@@ -4,39 +4,54 @@ const jwt = require("jsonwebtoken");
 const Token = require("../models/Token");
 const config = require("config");
 const { updateTokens } = require("../helpers/updateTokens");
+const constants = require("../constants/constants");
+const cookie = require("cookie");
 
 exports.authPost = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
-
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({
+                message: "You don't have an account yet. Please register.",
+            });
         }
+
         const isPassValid = bcrypt.compareSync(password, user.password);
         if (!isPassValid) {
             return res.status(400).json({ message: "Invalid password" });
         }
 
-        updateTokens(user.id).then((tokens) =>
+        updateTokens(user.id).then((tokens) => {
+            res.setHeader("Set-Cookie", [
+                cookie.serialize("token", `${tokens.accessToken}`, {
+                    httpOnly: true,
+                    maxAge: 60 * 60,
+                    path: "/",
+                }),
+                cookie.serialize("refreshToken", `${tokens.refreshToken}`, {
+                    httpOnly: true,
+                    maxAge: 60 * 60,
+                    path: "/",
+                }),
+            ]);
             res.status(200).send({
-                tokens,
                 user: {
                     id_user: user.id,
                     name: user.name,
                     userRole: user.userRole,
                     photo: user.photo,
                 },
-            })
-        );
+            });
+        });
     } catch (e) {
         console.log(e);
-        res.send({ message: "Server error" });
+        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
     }
 };
 
 exports.refreshTokens = (refreshToken) => {
-    let payload = jwt.verify(refreshToken, config.get("secretKey"));
+    const payload = jwt.verify(refreshToken, config.get("secretKey"));
 
     try {
         if (payload.type !== "refresh") {
@@ -52,7 +67,7 @@ exports.refreshTokens = (refreshToken) => {
             return;
         }
     }
-    const tok = Token.findOne({ tokenId: payload.id })
+    Token.findOne({ tokenId: payload.id })
         .exec()
         .then((token) => {
             if (token === null) {
@@ -61,6 +76,6 @@ exports.refreshTokens = (refreshToken) => {
 
             return updateTokens(token.userId);
         })
-        .then((tokens) => console.log(tokens))
+        .then((tokens) => tokens)
         .catch((err) => res.status(400).json({ message: err.message }));
 };

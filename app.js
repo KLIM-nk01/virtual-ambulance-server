@@ -11,13 +11,17 @@ const authorizationRoutes = require("./routes/auth.routes");
 const userAuthRoutes = require("./routes/userAuth.routes");
 const profileRoutes = require("./routes/profile.routes");
 const cookieParser = require("cookie-parser");
-const refreshTokenRoutes = require("./routes/refreshToken.routes");
 
 app.use(
     cors({
-        origin: "*",
+        origin: "http://localhost:8080",
+        preflightContinue: true,
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        credentials: true,
     })
 );
+
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.static("public"));
 app.use("/medCenters", medCentersRoutes);
@@ -26,8 +30,6 @@ app.use("/registration", registrationRoutes);
 app.use("/authorization", authorizationRoutes);
 app.use("/userAuth", userAuthRoutes);
 app.use("/profile", profileRoutes);
-app.use("/refreshToken", refreshTokenRoutes);
-app.use(cookieParser());
 
 start = async () => {
     try {

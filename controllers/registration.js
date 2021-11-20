@@ -5,6 +5,7 @@ const Doctor = require("../models/Doctor");
 const MedCenter = require("../models/MedCenter");
 const constants = require("../constants/constants");
 const { updateTokens } = require("../helpers/updateTokens");
+const cookie = require("cookie");
 
 exports.registrationUserPost = async (req, res) => {
     try {
@@ -31,11 +32,13 @@ exports.registrationUserPost = async (req, res) => {
                 message: `User with email ${email} already exist`,
             });
         }
+
         if (check_phone) {
             return res.status(400).json({
                 message: `User with phone ${phone} already exist`,
             });
         }
+
         const hashPassword = await bcrypt.hash(password, 8);
 
         const user = new User({
@@ -47,6 +50,7 @@ exports.registrationUserPost = async (req, res) => {
             password: hashPassword,
             userRole,
         });
+
         await user.save();
 
         if (userRole === constants.USER_ROLE.PATIENT) {
@@ -66,7 +70,9 @@ exports.registrationUserPost = async (req, res) => {
                 workTime: [],
                 patients: [],
             });
+
             await doctor.save();
+
             await MedCenter.findOneAndUpdate(
                 { _id: workPlace },
                 {
@@ -76,19 +82,30 @@ exports.registrationUserPost = async (req, res) => {
                 }
             );
         }
-        updateTokens(user.id).then((tokens) =>
+        updateTokens(user.id).then((tokens) => {
+            res.setHeader("Set-Cookie", [
+                cookie.serialize("token", `${tokens.accessToken}`, {
+                    httpOnly: true,
+                    maxAge: 60 * 60,
+                    path: "/",
+                }),
+                cookie.serialize("refreshToken", `${tokens.refreshToken}`, {
+                    httpOnly: true,
+                    maxAge: 60 * 60,
+                    path: "/",
+                }),
+            ]);
             res.status(200).send({
-                tokens,
                 user: {
                     id_user: user.id,
                     name: user.name,
                     userRole: user.userRole,
                     photo: user.photo,
                 },
-            })
-        );
+            });
+        });
     } catch (e) {
         console.log(e);
-        res.send({ message: "Server error" });
+        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
     }
 };
