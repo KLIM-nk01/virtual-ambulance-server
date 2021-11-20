@@ -1,7 +1,7 @@
 const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 const DateTime = require("../models/DoctorDateTime");
-const constants = require("../constants/constants");
+const { SERVER_ERROR } = require("../constants/constants").ERRORS_MESSAGE;
 
 exports.profilePatientGet = async (req, res) => {
     try {
@@ -50,7 +50,7 @@ exports.profilePatientGet = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };
 
@@ -104,7 +104,7 @@ exports.profileDoctorGet = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };
 
@@ -136,7 +136,7 @@ exports.profileDoctorAddDatePut = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };
 
@@ -165,7 +165,7 @@ exports.profileDoctorDeleteDataDelete = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };
 
@@ -233,7 +233,7 @@ exports.profilePatientAddAppointmentPut = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };
 
@@ -270,6 +270,6 @@ exports.profilePatientDeleteAppointmentDelete = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };

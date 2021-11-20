@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const Token = require("../models/Token");
 const cookie = require("cookie");
+const { UNAUTHORIZED, SERVER_ERROR } =
+    require("../constants/constants").ERRORS_MESSAGE;
 
 module.exports = async (req, res, next) => {
     if (req.method === "OPTIONS") {
@@ -12,18 +14,17 @@ module.exports = async (req, res, next) => {
         const token = cookie.parse(req.headers.cookie).token;
 
         if (!token) {
-            res.status(401).json({ message: "Unauthorized!" });
+            res.status(401).json({ message: UNAUTHORIZED });
             return;
         }
-        
+
         const payload = jwt.verify(token, config.get("secretKey"));
 
         if (payload.type !== "access") {
-            return res.status(500).json({ message: "Server error." });
+            return res.status(500).json({ message: SERVER_ERROR });
         }
 
-        const decoded = jwt.verify(token, config.get("secretKey"));
-        req.user = decoded;
+        req.user = jwt.verify(token, config.get("secretKey"));
         next();
     } catch (e) {
         if (e instanceof jwt.TokenExpiredError) {
@@ -44,8 +45,10 @@ module.exports = async (req, res, next) => {
                 next();
                 return;
             }
-        } else if (e instanceof jwt.JsonWebTokenError) {
-            res.status(401).json({ message: "Unauthorized!" });
+            return;
+        }
+        if (e instanceof jwt.JsonWebTokenError) {
+            res.status(401).json({ message: UNAUTHORIZED });
             return;
         }
     }

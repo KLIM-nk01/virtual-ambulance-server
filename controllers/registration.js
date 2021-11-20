@@ -3,7 +3,7 @@ const User = require("../models/User");
 const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 const MedCenter = require("../models/MedCenter");
-const constants = require("../constants/constants");
+const { SERVER_ERROR } = require("../constants/constants").ERRORS_MESSAGE;
 const { updateTokens } = require("../helpers/updateTokens");
 const cookie = require("cookie");
 
@@ -60,8 +60,12 @@ exports.registrationUserPost = async (req, res) => {
                 birthday,
                 address,
             });
+
             await patient.save();
-        } else if (userRole === constants.USER_ROLE.DOCTOR) {
+            return;
+        }
+
+        if (userRole === constants.USER_ROLE.DOCTOR) {
             const doctor = await new Doctor({
                 userData: user.id,
                 experience,
@@ -81,7 +85,9 @@ exports.registrationUserPost = async (req, res) => {
                     },
                 }
             );
+            return;
         }
+
         updateTokens(user.id).then((tokens) => {
             res.setHeader("Set-Cookie", [
                 cookie.serialize("token", `${tokens.accessToken}`, {
@@ -89,12 +95,14 @@ exports.registrationUserPost = async (req, res) => {
                     maxAge: 60 * 60,
                     path: "/",
                 }),
+
                 cookie.serialize("refreshToken", `${tokens.refreshToken}`, {
                     httpOnly: true,
-                    maxAge: 60 * 60,
+                    maxAge: 60 * 60 * 240,
                     path: "/",
                 }),
             ]);
+
             res.status(200).send({
                 user: {
                     id_user: user.id,
@@ -106,6 +114,6 @@ exports.registrationUserPost = async (req, res) => {
         });
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };

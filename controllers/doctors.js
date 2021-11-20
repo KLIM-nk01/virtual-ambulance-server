@@ -1,5 +1,5 @@
 const Doctor = require("../models/Doctor");
-const constants = require("../constants/constants");
+const { SERVER_ERROR } = require("../constants/constants").ERRORS_MESSAGE;
 
 exports.allDoctorsDataGet = async (req, res) => {
     try {
@@ -18,6 +18,6 @@ exports.allDoctorsDataGet = async (req, res) => {
         res.status(200).json(doctors);
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };

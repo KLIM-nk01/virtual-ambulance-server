@@ -6,6 +6,7 @@ module.exports = Object.freeze({
         ADMIN: "admin",
     },
     ERRORS_MESSAGE: {
-        SERVER_ERROR: "Server error."
-    }
+        SERVER_ERROR: "Server error.",
+        UNAUTHORIZED: "Unauthorized.",
+    },
 });

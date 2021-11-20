@@ -1,21 +1,18 @@
 const MedCenter = require("../models/MedCenter");
-const Doctor = require("../models/Doctor");
-const User = require("../models/User");
-const constants = require("../constants/constants");
+const SERVER_ERROR = require("../constants/constants").ERRORS_MESSAGE;
 
 exports.medCentersGet = async (req, res) => {
     try {
         const medCenters = await MedCenter.find().populate({
             path: "medStaff",
             populate: {
-                path: "userData"
-            }
+                path: "userData",
+            },
         });
 
         res.status(200).json(medCenters);
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };
-

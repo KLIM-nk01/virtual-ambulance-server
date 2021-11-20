@@ -4,13 +4,14 @@ const jwt = require("jsonwebtoken");
 const Token = require("../models/Token");
 const config = require("config");
 const { updateTokens } = require("../helpers/updateTokens");
-const constants = require("../constants/constants");
+const { UNAUTHORIZED } = require("../constants/constants").ERRORS_MESSAGE;
 const cookie = require("cookie");
 
 exports.authPost = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
+
         if (!user) {
             return res.status(404).json({
                 message: "You don't have an account yet. Please register.",
@@ -18,6 +19,7 @@ exports.authPost = async (req, res) => {
         }
 
         const isPassValid = bcrypt.compareSync(password, user.password);
+
         if (!isPassValid) {
             return res.status(400).json({ message: "Invalid password" });
         }
@@ -29,12 +31,14 @@ exports.authPost = async (req, res) => {
                     maxAge: 60 * 60,
                     path: "/",
                 }),
+
                 cookie.serialize("refreshToken", `${tokens.refreshToken}`, {
                     httpOnly: true,
-                    maxAge: 60 * 60,
+                    maxAge: 60 * 60 * 240,
                     path: "/",
                 }),
             ]);
+
             res.status(200).send({
                 user: {
                     id_user: user.id,
@@ -55,23 +59,25 @@ exports.refreshTokens = (refreshToken) => {
 
     try {
         if (payload.type !== "refresh") {
-            res.status(400).json({ message: "Invalid Token!" });
+            res.status(401).json({ message: UNAUTHORIZED });
             return;
         }
     } catch (e) {
         if (e instanceof jwt.TokenExpiredError) {
-            res.status(400).json({ message: "Token expired!" });
+            res.status(401).json({ message: UNAUTHORIZED });
             return;
-        } else if (e instanceof jwt.JsonWebTokenError) {
-            res.status(400).json({ message: "Invalid Token!" });
+        }
+        if (e instanceof jwt.JsonWebTokenError) {
+            res.status(401).json({ message: UNAUTHORIZED });
             return;
         }
     }
+
     Token.findOne({ tokenId: payload.id })
         .exec()
         .then((token) => {
             if (token === null) {
-                throw new Error("Invalid token");
+                throw new Error(UNAUTHORIZED);
             }
 
             return updateTokens(token.userId);

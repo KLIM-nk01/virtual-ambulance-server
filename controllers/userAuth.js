@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const { updateTokens } = require("../helpers/updateTokens");
-const constants = require("../constants/constants");
+const { SERVER_ERROR } = require("../constants/constants").ERRORS_MESSAGE;
 const cookie = require("cookie");
 
 exports.userAuthGet = async (req, res) => {
@@ -16,10 +16,11 @@ exports.userAuthGet = async (req, res) => {
                 }),
                 cookie.serialize("refreshToken", `${tokens.refreshToken}`, {
                     httpOnly: true,
-                    maxAge: 60 * 60,
+                    maxAge: 60 * 60 * 240,
                     path: "/",
                 }),
             ]);
+
             res.status(200).send({
                 user: {
                     id_user: user.id,
@@ -31,6 +32,6 @@ exports.userAuthGet = async (req, res) => {
         });
     } catch (e) {
         console.log(e);
-        res.send({ message: constants.ERRORS_MESSAGE.SERVER_ERROR });
+        res.send({ message: SERVER_ERROR });
     }
 };
