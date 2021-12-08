@@ -27,7 +27,10 @@ module.exports = async (req, res, next) => {
         req.user = jwt.verify(token, config.get("secretKey"));
         next();
     } catch (e) {
-        if (e instanceof jwt.TokenExpiredError) {
+        if (
+            e instanceof jwt.TokenExpiredError ||
+            e instanceof jwt.JsonWebTokenError
+        ) {
             const refreshToken = cookie.parse(req.headers.cookie).refreshToken;
             if (refreshToken !== "undefined") {
                 const decodedRefreshToken = jwt.verify(
@@ -47,9 +50,8 @@ module.exports = async (req, res, next) => {
             }
             return;
         }
-        if (e instanceof jwt.JsonWebTokenError) {
-            res.status(401).json({ message: UNAUTHORIZED });
-            return;
-        }
+
+        res.status(401).json({ message: UNAUTHORIZED });
+        return;
     }
 };

@@ -4,6 +4,7 @@ const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
 const MedCenter = require("../models/MedCenter");
 const { SERVER_ERROR } = require("../constants/constants").ERRORS_MESSAGE;
+const constants = require("../constants/constants");
 const { updateTokens } = require("../helpers/updateTokens");
 const cookie = require("cookie");
 
@@ -62,7 +63,6 @@ exports.registrationUserPost = async (req, res) => {
             });
 
             await patient.save();
-            return;
         }
 
         if (userRole === constants.USER_ROLE.DOCTOR) {
@@ -85,10 +85,10 @@ exports.registrationUserPost = async (req, res) => {
                     },
                 }
             );
-            return;
         }
 
         updateTokens(user.id).then((tokens) => {
+            console.log("+");
             res.setHeader("Set-Cookie", [
                 cookie.serialize("token", `${tokens.accessToken}`, {
                     httpOnly: true,

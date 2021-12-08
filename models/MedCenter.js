@@ -7,7 +7,7 @@ const MedCenter = new Schema({
     description: { type: String },
     services: [{ type: String }],
     medStaff: [{ type: Schema.Types.ObjectId, ref: "Doctor" }],
-    location: { lat: { type: Number }, log: { type: Number } },
+    location: { lat: { type: Number }, lon: { type: Number } },
 });
 
 module.exports = model("MedCenter", MedCenter);

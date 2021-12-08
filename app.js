@@ -11,11 +11,10 @@ const authorizationRoutes = require("./routes/auth.routes");
 const userAuthRoutes = require("./routes/userAuth.routes");
 const profileRoutes = require("./routes/profile.routes");
 const cookieParser = require("cookie-parser");
-const { SERVER_ERROR } = require("./constants/constants").ERRORS_MESSAGE;
-console.log(SERVER_ERROR);
+
 app.use(
     cors({
-        origin: "http://localhost:8080",
+        origin: config.get("clientUrl"),
         preflightContinue: true,
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
