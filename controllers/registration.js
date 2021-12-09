@@ -88,7 +88,6 @@ exports.registrationUserPost = async (req, res) => {
         }
 
         updateTokens(user.id).then((tokens) => {
-            console.log("+");
             res.setHeader("Set-Cookie", [
                 cookie.serialize("token", `${tokens.accessToken}`, {
                     httpOnly: true,

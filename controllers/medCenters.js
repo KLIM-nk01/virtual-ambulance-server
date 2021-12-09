@@ -50,8 +50,8 @@ exports.medCentersCreateNewPost = async (req, res) => {
             location: { lat: 0, lon: 0 },
         });
         await medCenter.save();
-
-        res.status(200).send(medCenter);
+        
+        res.json({ message: "Created" });
     } catch (e) {
         console.log(e);
         res.send({ message: SERVER_ERROR });
