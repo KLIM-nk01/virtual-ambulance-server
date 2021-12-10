@@ -10,4 +10,26 @@ router.get(
 );
 router.get("/doctor", userAuthMiddleware, profileControllers.profileDoctorGet);
 
+router.put(
+    "/addDate",
+    userAuthMiddleware,
+    profileControllers.profileDoctorAddDatePut
+);
+router.delete(
+    "/deleteDate/:idDate",
+    userAuthMiddleware,
+    profileControllers.profileDoctorDeleteDataDelete
+);
+router.put(
+    "/addAppointment",
+    userAuthMiddleware,
+    profileControllers.profilePatientAddAppointmentPut
+);
+
+router.delete(
+    "/deleteAppointment/:idDate",
+    userAuthMiddleware,
+    profileControllers.profilePatientDeleteAppointmentDelete
+);
+
 module.exports = router;

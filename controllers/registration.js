@@ -2,10 +2,12 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
-const jwt = require("jsonwebtoken");
-const config = require("config");
 const MedCenter = require("../models/MedCenter");
+const { SERVER_ERROR } = require("../constants/constants").ERRORS_MESSAGE;
 const constants = require("../constants/constants");
+const { updateTokens } = require("../helpers/updateTokens");
+const cookie = require("cookie");
+
 exports.registrationUserPost = async (req, res) => {
     try {
         const {
@@ -31,11 +33,13 @@ exports.registrationUserPost = async (req, res) => {
                 message: `User with email ${email} already exist`,
             });
         }
+
         if (check_phone) {
             return res.status(400).json({
                 message: `User with phone ${phone} already exist`,
             });
         }
+
         const hashPassword = await bcrypt.hash(password, 8);
 
         const user = new User({
@@ -47,6 +51,7 @@ exports.registrationUserPost = async (req, res) => {
             password: hashPassword,
             userRole,
         });
+
         await user.save();
 
         if (userRole === constants.USER_ROLE.PATIENT) {
@@ -56,8 +61,11 @@ exports.registrationUserPost = async (req, res) => {
                 birthday,
                 address,
             });
+
             await patient.save();
-        } else if (userRole === constants.USER_ROLE.DOCTOR) {
+        }
+
+        if (userRole === constants.USER_ROLE.DOCTOR) {
             const doctor = await new Doctor({
                 userData: user.id,
                 experience,
@@ -66,30 +74,45 @@ exports.registrationUserPost = async (req, res) => {
                 workTime: [],
                 patients: [],
             });
+
             await doctor.save();
+
             await MedCenter.findOneAndUpdate(
                 { _id: workPlace },
                 {
                     $push: {
-                        medStaff: doctor.id,
+                        medStaff: doctor._id,
                     },
                 }
             );
         }
-        const token = jwt.sign({ id: user.id }, config.get("secretKey"), {
-            expiresIn: "1h",
-        });
-        return res.status(201).send({
-            token,
-            user: {
-                id: user.id,
-                name: user.name,
-                userRole: user.userRole,
-                photo: user.photo,
-            },
+
+        updateTokens(user.id).then((tokens) => {
+            res.setHeader("Set-Cookie", [
+                cookie.serialize("token", `${tokens.accessToken}`, {
+                    httpOnly: true,
+                    maxAge: 60 * 60,
+                    path: "/",
+                }),
+
+                cookie.serialize("refreshToken", `${tokens.refreshToken}`, {
+                    httpOnly: true,
+                    maxAge: 60 * 60 * 240,
+                    path: "/",
+                }),
+            ]);
+
+            res.status(200).send({
+                user: {
+                    id_user: user.id,
+                    name: user.name,
+                    userRole: user.userRole,
+                    photo: user.photo,
+                },
+            });
         });
     } catch (e) {
         console.log(e);
-        res.send({ message: "Server error" });
+        res.send({ message: SERVER_ERROR });
     }
 };
