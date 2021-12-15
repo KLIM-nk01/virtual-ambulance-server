@@ -2,11 +2,10 @@
   "name": "virtual-ambulance-server",
   "version": "1.0.0",
   "description": "Virtual Ambulance Server",
-  "main": "index.js",
-  "type": "module",
+  "main": "app.js",
   "scripts": {
-    "start": "node index",
-    "dev": "nodemon index"
+    "start": "node app",
+    "dev": "nodemon app"
   },
   "repository": {
     "type": "git",
@@ -24,10 +23,19 @@
   },
   "homepage": "https://github.com/KLIM-nk01/virtual-ambulance-server#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "config": "^3.3.6",
+    "cookie": "^0.4.1",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "mongoose": "^6.0.11"
+    "express-validator": "^6.13.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "mongoose": "^6.0.11",
+    "multer": "^1.4.3",
+    "uniqid": "^5.4.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
